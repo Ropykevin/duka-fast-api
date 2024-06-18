@@ -34,7 +34,6 @@ origins=[
 ]
 
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -77,30 +76,30 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return db_user
 
 
-# login user
-@app.get("/google-login")
-async def login(request: Request):
-    redirect_uri = request.url_for('auth')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+# # login user
+# @app.get("/google-login")
+# async def login(request: Request):
+#     redirect_uri = request.url_for('auth')
+#     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@app.get("/auth")
-async def auth(request: Request, db: Session = Depends(get_db)):
-    token = await oauth.google.authorize_access_token(request)
-    user_info = await oauth.google.parse_id_token(token)
+# @app.get("/auth")
+# async def auth(request: Request, db: Session = Depends(get_db)):
+#     token = await oauth.google.authorize_access_token(request)
+#     user_info = await oauth.google.parse_id_token(token)
 
     # Register or get user
-    user = db.query(User).filter(User.email == user_info["email"]).first()
-    if not user:
-        user = User(username=user_info["email"],
-                    email=user_info["email"], password="")
-        db.add(user)
-        db.commit()
-        db.refresh(user)
+    # user = db.query(User).filter(User.email == user_info["email"]).first()
+    # if not user:
+    #     user = User(username=user_info["email"],
+    #                 email=user_info["email"], password="")
+    #     db.add(user)
+    #     db.commit()
+    #     db.refresh(user)
 
-    # You might want to return some response here
-    # For example, you can return the user's information
-    return {"user": user_info}
+    # # You might want to return some response here
+    # # For example, you can return the user's information
+    # return {"user": user_info}
 
 
 
