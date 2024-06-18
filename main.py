@@ -362,7 +362,7 @@ def generate_receipt(sale_ids: List[int], total_amount: float, payment_method: s
             Product.id == sale.product_id).first()
         pdf.drawString(100, y_position, str(product.name))  # Product Name
         pdf.drawString(400, y_position, str(sale.quantity))  # Quantity
-        pdf.drawString(500, y_position, f"${
+        pdf.drawString(500, y_position, f"${\
                        sale.total_price:.2f}")  # Total Price
         y_position -= 20
 
