@@ -345,7 +345,7 @@ def generate_receipt(sale_ids: List[int], total_amount: float, payment_method: s
 
     # Header
     pdf.drawString(100, 750, "Receipt")
-    pdf.drawString(100, 735, f"Date: {
+    pdf.drawString(100, 735, f"Date: {\
                    datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     pdf.drawString(100, 720, f"Payment Method: {payment_method}")
 
