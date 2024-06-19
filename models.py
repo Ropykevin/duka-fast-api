@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import datetime
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:Kevin254!@localhost/myduka_api"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:5496@localhost/myduka_api"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
