@@ -29,14 +29,11 @@ from fastapi.responses import FileResponse
 # )
 app=FastAPI()
 
-origins=[
-    "http://localhost:5173", "http://localhost:3000", "http://209.38.36.208"
-]
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins="*",
     allow_credentials=True,
     allow_methods=["GET", "POST","PUT"],
     allow_headers=["Authorization", "Content-Type"],
