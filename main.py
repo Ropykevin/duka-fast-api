@@ -461,7 +461,5 @@ def read_expenses(db: Session = Depends(get_db), current_user: User = Depends(ge
 
 
 if __name__ == "__main__":
-    config = uvicorn.Config("main:app", port=8000,host='0.0.0.0',
-                            log_level="info", reload=True)
-    server = uvicorn.Server(config)
-    server.run()
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
