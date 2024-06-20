@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import datetime
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:5496@localhost/myduka_api"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:Kevin254!@localhost/myduka_api"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -17,9 +17,13 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+    created_at = Column(
+        DateTime, default=datetime.datetime.utcnow, nullable=False)
 
     products = relationship("Product", back_populates="user")
     sales = relationship("Sale", back_populates="user")
+    expenses = relationship("Expense", back_populates="user")
+    customers = relationship("Customer", back_populates="user")
     payments = relationship("Payment", back_populates="user")
 
 
@@ -71,5 +75,32 @@ class Payment(Base):
     user = relationship("User", back_populates="payments")
 
 
-# Base.metadata.drop_all(bind=engine)
+class Expense(Base):
+    __tablename__ = "expenses"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    amount = Column(Float, nullable=False)
+    description = Column(String, nullable=True)
+    created_at = Column(
+        DateTime, default=datetime.datetime.utcnow, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    user = relationship("User", back_populates="expenses")
+
+
+class Customer(Base):
+    __tablename__ = "customers"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    created_at = Column(
+        DateTime, default=datetime.datetime.utcnow, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    user = relationship("User", back_populates="customers")
+
+
+# Drop all tables and recreate them
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)

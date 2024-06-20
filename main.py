@@ -1,8 +1,8 @@
 from fastapi import FastAPI,HTTPException,Depends
 import uvicorn
 from datetime import timedelta,datetime,timezone
-from models import SessionLocal,User,Product,Sale,Payment
-from pydatic_models import UserCreate, UserLogin, ProductCreate,\
+from models import SessionLocal,User,Product,Sale,Payment,Customer,Expense
+from pydatic_models import UserCreate, UserLogin, ProductCreate,CustomerOut,CustomerCreate,ExpenseCreate,ExpenseOut,\
 UserOut, ProductBase, ProductUpdate, ProductUpdateOut,SaleCreate,SaleUpdate,SaleUpdateOut,SaleOut,PaymentResponse,PaymentCreate
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -397,6 +397,70 @@ def create_payment(payment: PaymentCreate, db: Session = Depends(get_db), curren
 @app.get("/receipts/{receipt_filename}")
 def get_receipt(receipt_filename: str):
     return FileResponse(receipt_filename, media_type='application/pdf', filename=receipt_filename)
+
+
+@app.get('/total_sales')
+def get_total_sales(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    total_sales = db.query(func.sum(Sale.total_price)).filter(
+        Sale.user_id == current_user.id).scalar()
+    print(total_sales)
+    return {"total_sales": total_sales if total_sales is not None else 0.0}
+
+# @app.get('/total_expenses')
+# def get_total_expenses(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+#     if not current_user:
+#         raise HTTPException(status_code=403, detail="Not authorized")
+#     total_expenses = db.query(func.sum(Expense.amount)).filter(Expense.user_id == current_user.id).scalar()
+#     total_expenses = total_expenses if total_expenses is not None else 0.0
+#     return {"total_expenses": total_expenses}
+
+#  customers
+# get customer 
+
+
+@app.get("/customers/", response_model=list[CustomerOut])
+def get_customers(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    customers_data=db.query(Customer).filter(Customer.user_id == current_user.id).all()
+    return customers_data
+
+# post customer
+@app.post("/customers/", response_model=CustomerOut)
+def create_customer(customer: CustomerCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_customer =Customer(
+        name=customer.name, email=customer.email, user_id=current_user.id)
+    db.add(db_customer)
+    db.commit()
+    db.refresh(db_customer)
+    return db_customer
+
+@app.get('/total_customers')
+def get_total_customers(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    total_customers = db.query(func.count(Customer.id)).filter(
+        Customer.user_id == current_user.id).scalar()
+    total_customers = total_customers if total_customers is not None else 0
+    return {"total_customers": total_customers}
+
+# expenses
+# get 
+
+# post
+@app.post("/expenses", response_model=ExpenseOut)
+def create_expense(expense: ExpenseCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_expense =Expense(
+        amount=expense.amount, description=expense.description, user_id=current_user.id)
+    db.add(db_expense)
+    db.commit()
+    db.refresh(db_expense)
+    return db_expense
+
+
+@app.get("/expenses", response_model=list[ExpenseOut])
+def read_expenses(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    expenses=db.query(Expense).filter(Expense.user_id == current_user.id).all()
+    print(expenses)
+    return expenses
 
 
 if __name__ == "__main__":

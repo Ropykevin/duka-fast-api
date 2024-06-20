@@ -107,3 +107,37 @@ class PaymentResponse(BaseModel):
 
 class PaymentCreate(PaymentResponse):
     payment_method: str 
+
+
+class CustomerBase(BaseModel):
+    name: str
+    email: str
+
+
+class CustomerCreate(CustomerBase):
+    pass
+
+
+class CustomerOut(CustomerBase):
+    id: int
+    created_at: Optional[datetime]
+
+    class Config:
+        orm_mode = True
+
+
+class ExpenseBase(BaseModel):
+    amount: float
+    description: Optional[str]
+
+
+class ExpenseCreate(ExpenseBase):
+    pass
+
+
+class ExpenseOut(ExpenseBase):
+    id: int
+    created_at: Optional[datetime]
+
+    class Config:
+        orm_mode = True
