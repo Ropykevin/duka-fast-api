@@ -29,14 +29,18 @@ from fastapi.responses import FileResponse
 # )
 app=FastAPI()
 
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://209.38.36.208",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 def get_db():
